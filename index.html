@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>桃園颱風假模擬器</title>
+<style>
+:root{--navy:#09152d;--blue:#18345e;--cream:#fff9e9;--orange:#e56a36;--muted:#b9c8e2}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 50% 10%,#1d4775 0,#0b1a35 48%,#060d1c 100%);color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;min-height:100vh;padding:22px 14px 38px}
+.wrap{max-width:760px;margin:auto}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:center;color:#d8e6ff;font-size:13px;letter-spacing:.06em;margin-bottom:14px}
+.pill{border:1px solid #54719c;border-radius:999px;padding:7px 11px;background:#102648}
+h1{font-size:clamp(29px,7vw,48px);line-height:1.12;margin:12px 0 8px;letter-spacing:.02em}
+.sub{color:#c5d4ec;line-height:1.7;margin:0 0 18px}
+.map{position:relative;overflow:hidden;border:1px solid #35527b;border-radius:22px;background:linear-gradient(145deg,#102c50,#0c1c36 70%);height:330px;margin:18px 0}
+.grid{position:absolute;inset:0;background-image:linear-gradient(#31517844 1px,transparent 1px),linear-gradient(90deg,#31517844 1px,transparent 1px);background-size:44px 44px}
+.island{position:absolute;width:150px;height:215px;right:18%;top:45px;background:#476e65;border:2px solid #87a99a;clip-path:polygon(36% 0,65% 7%,80% 22%,73% 35%,93% 48%,79% 62%,67% 78%,51% 100%,35% 89%,30% 72%,12% 62%,20% 44%,6% 28%,25% 18%);opacity:.9;transform:rotate(14deg)}
+.typhoon{position:absolute;left:12%;top:18%;width:104px;height:104px;border:2px solid #e5b84f;border-radius:50%;box-shadow:0 0 0 16px #e5b84f22,0 0 0 32px #e5b84f18,0 0 35px #e5b84f66;display:grid;place-items:center;transition:all .7s ease}
+.typhoon:before,.typhoon:after{content:"";position:absolute;border:3px solid #f4d98a;border-left-color:transparent;border-bottom-color:transparent;border-radius:50%;width:66%;height:66%;transform:rotate(35deg)}
+.typhoon:after{width:38%;height:38%;transform:rotate(205deg);border-color:#fff0ba;border-left-color:transparent;border-bottom-color:transparent}
+.eye{width:16px;height:16px;background:#f8d87e;border-radius:50%;z-index:1}
+.path{position:absolute;left:12%;top:23%;width:55%;height:52%;border-top:3px dashed #e9c46b;transform:rotate(22deg);border-radius:50%;opacity:.8}
+.city{position:absolute;right:14%;top:48%;font-weight:800;color:#fff2c8;text-shadow:0 2px 8px #000;font-size:16px}
+.city:before{content:"";display:inline-block;width:10px;height:10px;background:#ff704b;border:2px solid #fff;border-radius:50%;margin-right:7px}
+.maplabel{position:absolute;left:14px;top:14px;background:#09152dcc;border:1px solid #49658d;border-radius:10px;padding:8px 10px;font-size:13px;color:#d9e8ff}
+.mapbottom{position:absolute;bottom:13px;left:14px;right:14px;display:flex;justify-content:space-between;gap:8px;color:#c6d8f2;font-size:12px}
+.card{background:var(--cream);color:#1a2b4c;border-radius:24px;padding:22px 20px;box-shadow:0 18px 45px #0005}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.date{font-weight:800;font-size:16px}
+.status{font-size:12px;color:#536682;background:#e9edee;border-radius:999px;padding:6px 10px}
+h2{font-size:23px;margin:17px 0 6px}
+.desc{color:#5e6a7e;margin:0;line-height:1.6}
+.big{font-size:clamp(43px,11vw,68px);font-weight:900;letter-spacing:-.03em;color:#c6532e;margin:15px 0 0;line-height:1.1}
+.big small{font-size:24px;letter-spacing:0}
+.stats{margin-top:16px;padding-top:14px;border-top:1px solid #e2dfd5;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:#f0eee5;border-radius:13px;padding:11px 8px;text-align:center}
+.stat b{display:block;font-size:18px;color:#213a63}
+.stat span{font-size:12px;color:#68758a}
+button{font:inherit;font-weight:800;border:0;border-radius:14px;padding:15px 17px;cursor:pointer}
+.primary{width:100%;background:#1c315a;color:white;margin-top:17px;font-size:17px;box-shadow:0 5px 0 #0d1e3d}
+.secondary{background:#e7ebf3;color:#1c315a;margin-top:10px;width:100%}
+button:active{transform:translateY(2px);box-shadow:none}
+.note{text-align:center;color:#9fb4d3;font-size:12px;line-height:1.6;margin:16px 6px 0}
+.hidden{display:none}
+@media(min-width:600px){.card{padding:28px 30px}.map{height:380px}.typhoon{width:120px;height:120px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><span>🌪️ TAOYUAN WEATHER LAB</span><span class="pill">純屬娛樂・非官方預報</span></div>
+  <h1>桃園颱風假<br>模擬器</h1>
+  <p class="sub">颱風來不來桃園？會不會放假？<br>按一下，看看你的颱風假命運！</p>
+  <div class="map" aria-label="颱風路徑模擬圖">
+    <div class="grid"></div><div class="island"></div><div class="path" id="path"></div>
+    <div class="typhoon" id="storm"><div class="eye"></div></div>
+    <div class="city">桃園</div>
+    <div class="maplabel" id="mapdate">模擬日期：等待生成</div>
+    <div class="mapbottom"><span id="stormname">颱風名稱：尚未生成</span><span id="wind">風力：待模擬</span></div>
+  </div>
+  <section class="card">
+    <div class="row"><div class="date" id="date">你的桃園颱風事件</div><div class="status" id="status">等待抽籤</div></div>
+    <h2 id="headline">今天會放颱風假嗎？</h2>
+    <p class="desc" id="desc">點擊下方按鈕，生成一場專屬於你的桃園颱風事件。</p>
+    <div class="big" id="days">— <small>天颱風假</small></div>
+    <div class="stats">
+      <div class="stat"><b id="distance">—</b><span>最近距離</span></div>
+      <div class="stat"><b id="windstat">—</b><span>最大陣風</span></div>
+      <div class="stat"><b id="chance">—</b><span>放假機率</span></div>
+    </div>
+    <button class="primary" id="generate">🌪️ 生成桃園颱風</button>
+    <button class="secondary" id="share">分享我的颱風結果</button>
+  </section>
+  <p class="note">這是隨機生成的娛樂小遊戲，路徑、風速、日期與放假結果皆為虛構，並非氣象預報或政府停班停課公告。</p>
+</div>
+<script>
+const names=["納莉","小犬","山竹","梅花","天兔","海葵","蘇拉","康芮","米塔","茉莉"];
+const $=id=>document.getElementById(id);
+function generate(){
+ const name=names[Math.floor(Math.random()*names.length)];
+ const days=[0,0,0,1,1,1,2,2,3,5,7,10,23][Math.floor(Math.random()*13)];
+ const wind= Math.floor(90+Math.random()*115);
+ const km=Math.floor(8+Math.random()*420);
+ const chance=Math.max(3,Math.min(98,Math.round(92-km/5+(wind-130)*.18)));
+ const now=new Date(); now.setDate(now.getDate()+Math.floor(Math.random()*40)+1);
+ const dateText=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+ $("date").textContent=dateText+"　強烈颱風（"+name+"）";
+ $("mapdate").textContent="模擬日期："+(now.getMonth()+1)+"月"+now.getDate()+"日";
+ $("stormname").textContent="颱風名稱："+name;
+ $("wind").textContent="最大陣風："+wind+" km/h";
+ $("days").innerHTML=days+' <small>天颱風假</small>';
+ $("distance").textContent=km+" km";
+ $("windstat").textContent=wind+" km/h";
+ $("chance").textContent=chance+"%";
+ $("status").textContent=days>=2?"桃園可能放假！":days===1?"有機會放假":"看來要上班";
+ $("headline").textContent=days>=5?"桃園直接進入超長連假！":days>=2?"桃園市民準備睡到自然醒？":days===1?"等等市府公告！":"颱風擦身而過，明天照常上班？";
+ $("desc").textContent=days>=2?"模擬結果：風雨影響桃園，恭喜抽到颱風假！實際停班停課仍以官方公告為準。":"模擬結果：這次桃園放假運氣普通。別忘了這只是隨機遊戲！";
+ $("path").style.transform=`rotate(${Math.floor(Math.random()*55-15)}deg) translate(${Math.floor(Math.random()*30-10)}px,${Math.floor(Math.random()*25-10)}px)`;
+ $("storm").style.left=(8+Math.random()*42)+"%";
+ $("storm").style.top=(12+Math.random()*40)+"%";
+ $("generate").textContent="🔄 再生成一場颱風";
+}
+$("generate").addEventListener("click",generate);
+$("share").addEventListener("click",async()=>{
+ const result=`我的桃園颱風模擬結果：${$("date").textContent}，${$("days").textContent.replace(/\s+/g," ")}。快來抽你的結果！這是娛樂模擬，非官方預報。`;
+ try{if(navigator.share){await navigator.share({title:"桃園颱風假模擬器",text:result})}else if(navigator.clipboard){await navigator.clipboard.writeText(result);alert("結果文字已複製！你可以貼到 Threads 或 LINE。")}else{prompt("複製你的結果：",result)}}catch(e){}
+});
+</script>
+</body>
+</html>
